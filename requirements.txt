@@ -9,3 +9,4 @@ Pillow
 gdown
 requests
 scikit-learn
+symspellpy
