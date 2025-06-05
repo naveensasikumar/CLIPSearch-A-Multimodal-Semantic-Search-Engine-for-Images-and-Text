@@ -1,6 +1,6 @@
 # 🎯 CLIPSearch: A Multimodal Semantic Search Engine for Images and Text
 
-This project implements a multimodal AI-powered semantic search system using OpenAI’s CLIP and Sentence-BERT models. It enables users to search for images using natural language queries, image uploads, or a combination of both. The backend is powered by FastAPI, and the frontend offers an elegant Streamlit-based interface.
+CLIPSearch AI is a Streamlit-based multimodal retrieval system that encodes images and text into 512-dim CLIP embeddings, indexes them with FAISS, and delivers sub-second text-to-image or image-to-image search. Queries are normalized by a fine-tuned T5-small spell corrector; initial results are fetched via cosine similarity and reranked using GPT-2 logits for enhanced semantic relevance. Includes a Plotly analytics dashboard, offline operation once embeddings are built, and support for user-defined favorites and collections.
 
 ---
 
