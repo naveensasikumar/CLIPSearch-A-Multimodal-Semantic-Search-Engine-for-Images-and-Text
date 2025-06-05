@@ -1,5 +1,7 @@
 from transformers import CLIPProcessor, CLIPModel
 import torch
+import streamlit as st
+
 
 @st.cache_resource
 def load_clip():
