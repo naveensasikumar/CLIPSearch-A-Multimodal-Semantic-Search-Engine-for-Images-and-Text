@@ -123,7 +123,7 @@ spellfix_t5_small/
 ---
 
 ## 📽️ Demo
-[![Watch the demo]]([https://drive.google.com/file/d/1AbCDeFgHiJKlmNOPQR2/view](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing))
+[![Watch the demo](screenshots/demo-thumbnail.png)](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing)
 
 ---
 
