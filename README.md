@@ -87,6 +87,19 @@ To extract and download images:
 - Refer the Jupyter notebook to extract the images
 - This will save images into the `downloaded_images/` directory
 
+## 📦 Download Pretrained Spell Correction Model
+
+The `spellfix_t5_small/model.safetensors` file is too large for GitHub and is hosted on Google Drive.
+
+### 🔽 Download Instructions
+
+1. [Click here to download model.safetensors]([https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing))
+2. Create the following folder structure in your project:
+```
+spellfix_t5_small/
+└── model.safetensors
+```
+3. Place the downloaded `model.safetensors` file inside the `spellfix_t5_small/` directory.
 
 ---
 
@@ -110,9 +123,7 @@ To extract and download images:
 ---
 
 ## 📽️ Demo
-
-![CLIPSearch Demo](screenshots/demo1.png)  
-_More demo images available in the `/screenshots` folder._
+[![Watch the demo](screenshots/demo-thumbnail.png)]([https://drive.google.com/file/d/1AbCDeFgHiJKlmNOPQR2/view](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing))
 
 ---
 
