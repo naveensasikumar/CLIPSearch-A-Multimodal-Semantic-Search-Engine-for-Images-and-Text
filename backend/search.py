@@ -5,8 +5,8 @@ import numpy as np
 import faiss
 
 
-image_paths = np.load("../image_paths.npy", allow_pickle=True)
-image_embeddings = np.load("../image_embeddings.npy")
+image_paths = np.load("image_paths.npy", allow_pickle=True)
+image_embeddings = np.load("image_embeddings.npy")
 
 image_embeddings = image_embeddings / np.linalg.norm(image_embeddings, axis=1, keepdims=True)
 
