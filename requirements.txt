@@ -10,3 +10,5 @@ gdown
 requests
 scikit-learn
 symspellpy
+plotly
+
