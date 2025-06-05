@@ -93,7 +93,7 @@ The `spellfix_t5_small/model.safetensors` file is too large for GitHub and is ho
 
 ### 🔽 Download Instructions
 
-1. [Click here to download model.safetensors]([https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing))
+1. [Click here to download model.safetensors](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing)
 2. Create the following folder structure in your project:
 ```
 spellfix_t5_small/
@@ -123,7 +123,7 @@ spellfix_t5_small/
 ---
 
 ## 📽️ Demo
-[![Watch the demo]]([https://drive.google.com/file/d/1AbCDeFgHiJKlmNOPQR2/view](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing))
+[![Watch the demo](screenshots/demo-thumbnail.png)](https://drive.google.com/file/d/12h5_ccwOK68EXA9ppikOgrcon_PPXtFo/view?usp=share_link)
 
 ---
 
