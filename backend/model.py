@@ -6,6 +6,7 @@ def load_clip():
         print("Loading CLIP model...")
         model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
         processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+        model = model.to("cpu")
         model.eval()
         print("CLIP model loaded successfully")
         return model, processor
