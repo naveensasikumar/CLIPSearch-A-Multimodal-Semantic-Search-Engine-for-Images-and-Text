@@ -96,7 +96,7 @@ The `spellfix_t5_small/model.safetensors` file is too large for GitHub and is ho
 1. [Click here to download model.safetensors](https://drive.google.com/file/d/1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg/view?usp=sharing)
 2. Create the following folder structure in your project:
 ```
-spellfix_t5_small/
+spellfix_t5_small/s
 └── model.safetensors
 ```
 3. Place the downloaded `model.safetensors` file inside the `spellfix_t5_small/` directory.
