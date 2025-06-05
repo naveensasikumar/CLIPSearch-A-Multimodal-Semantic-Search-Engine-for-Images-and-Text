@@ -10,4 +10,3 @@ gdown
 requests
 scikit-learn
 symspellpy
-sentencepiece==0.1.99
