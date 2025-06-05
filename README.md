@@ -75,6 +75,18 @@ cd CLIPSearch
 cd ..
 streamlit run app.py
 ```
+---
+
+## 📁 Dataset & Images
+
+Due to GitHub size constraints, the full `downloaded_images/` folder is **not included** in the repository.
+
+To extract and download images:
+
+- Use the image URLs provided in `data/photos.csv`
+- Refer the Jupyter notebook to extract the images
+- This will save images into the `downloaded_images/` directory
+
 
 ---
 
