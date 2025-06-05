@@ -10,3 +10,4 @@ gdown
 requests
 scikit-learn
 symspellpy
+sentencepiece
