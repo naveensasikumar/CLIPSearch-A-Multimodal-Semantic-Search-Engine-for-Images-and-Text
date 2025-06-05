@@ -9,8 +9,8 @@ import streamlit as st
 
 class EnhancedSearchEngine:
     def __init__(self, 
-                 image_paths_file="../image_paths.npy",
-                 image_embeddings_file="../image_embeddings.npy",
+                 image_paths_file="image_paths.npy",
+                 image_embeddings_file="image_embeddings.npy",
                  collections_file="../data/collections.json",
                  favorites_file="../data/favorites.json"):
         
