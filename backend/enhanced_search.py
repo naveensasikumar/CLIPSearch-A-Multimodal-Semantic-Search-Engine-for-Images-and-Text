@@ -1,4 +1,3 @@
-# enhanced_search.py
 import numpy as np
 import faiss
 import json
@@ -20,22 +19,18 @@ class EnhancedSearchEngine:
         self.collections_file = collections_file
         self.favorites_file = favorites_file
         
-        # Load data
         self.load_search_data()
         self.ensure_data_files()
     
     def load_search_data(self):
-        """Load image paths and embeddings"""
         try:
             self.image_paths = np.load(self.image_paths_file, allow_pickle=True)
             self.image_embeddings = np.load(self.image_embeddings_file)
             
-            # Normalize embeddings
             self.image_embeddings = self.image_embeddings / np.linalg.norm(
                 self.image_embeddings, axis=1, keepdims=True
             )
             
-            # Build FAISS index
             d = self.image_embeddings.shape[1]
             self.index = faiss.IndexFlatIP(d)
             self.index.add(self.image_embeddings)
@@ -49,7 +44,6 @@ class EnhancedSearchEngine:
             self.index = None
     
     def ensure_data_files(self):
-        """Ensure data directory and files exist"""
         data_dir = Path("../data")
         data_dir.mkdir(exist_ok=True)
         
@@ -59,15 +53,12 @@ class EnhancedSearchEngine:
                     json.dump({}, f)
     
     def search_similar(self, query_vector, top_k=9, exclude_indices=None):
-        """Enhanced search with filtering options"""
         if self.index is None:
             return []
         
-        # Normalize query vector
         query_vector = query_vector / np.linalg.norm(query_vector)
         query_vector = np.array([query_vector], dtype="float32")
         
-        # Search for more results than needed to allow for filtering
         search_k = min(top_k * 3, len(self.image_paths))
         D, I = self.index.search(query_vector, search_k)
         
@@ -88,7 +79,6 @@ class EnhancedSearchEngine:
         return results
     
     def save_to_favorites(self, image_path, query="", user_id="default"):
-        """Save an image to favorites"""
         try:
             with open(self.favorites_file, 'r') as f:
                 favorites = json.load(f)
@@ -98,7 +88,6 @@ class EnhancedSearchEngine:
         if user_id not in favorites:
             favorites[user_id] = []
         
-        # Check if already in favorites
         if not any(fav['path'] == image_path for fav in favorites[user_id]):
             favorites[user_id].append({
                 "path": image_path,
@@ -112,7 +101,6 @@ class EnhancedSearchEngine:
         return False
     
     def get_favorites(self, user_id="default"):
-        """Get user's favorite images"""
         try:
             with open(self.favorites_file, 'r') as f:
                 favorites = json.load(f)
@@ -121,7 +109,6 @@ class EnhancedSearchEngine:
             return []
     
     def remove_from_favorites(self, image_path, user_id="default"):
-        """Remove an image from favorites"""
         try:
             with open(self.favorites_file, 'r') as f:
                 favorites = json.load(f)
@@ -140,7 +127,6 @@ class EnhancedSearchEngine:
         return False
     
     def create_collection(self, name, description="", user_id="default"):
-        """Create a new image collection"""
         try:
             with open(self.collections_file, 'r') as f:
                 collections = json.load(f)
@@ -164,7 +150,6 @@ class EnhancedSearchEngine:
         return collection_id
     
     def add_to_collection(self, collection_id, image_path, user_id="default"):
-        """Add an image to a collection"""
         try:
             with open(self.collections_file, 'r') as f:
                 collections = json.load(f)
@@ -183,7 +168,6 @@ class EnhancedSearchEngine:
         return False
     
     def get_collections(self, user_id="default"):
-        """Get user's collections"""
         try:
             with open(self.collections_file, 'r') as f:
                 collections = json.load(f)
@@ -192,19 +176,16 @@ class EnhancedSearchEngine:
             return {}
     
     def get_collection_images(self, collection_id, user_id="default"):
-        """Get images in a specific collection"""
         collections = self.get_collections(user_id)
         if collection_id in collections:
             return collections[collection_id]["images"]
         return []
     
     def search_in_collection(self, query_vector, collection_id, user_id="default", top_k=9):
-        """Search within a specific collection"""
         collection_images = self.get_collection_images(collection_id, user_id)
         if not collection_images:
             return []
         
-        # Find indices of collection images
         collection_indices = []
         for img_path in collection_images:
             for i, path in enumerate(self.image_paths):
@@ -215,15 +196,12 @@ class EnhancedSearchEngine:
         if not collection_indices:
             return []
         
-        # Get embeddings for collection images
         collection_embeddings = self.image_embeddings[collection_indices]
         
-        # Create temporary index for collection
         d = collection_embeddings.shape[1]
         temp_index = faiss.IndexFlatIP(d)
         temp_index.add(collection_embeddings)
         
-        # Search
         query_vector = query_vector / np.linalg.norm(query_vector)
         query_vector = np.array([query_vector], dtype="float32")
         
@@ -241,8 +219,6 @@ class EnhancedSearchEngine:
         return results
     
     def find_similar_to_image(self, target_image_path, top_k=9, exclude_self=True):
-        """Find images similar to a specific image"""
-        # Find the index of the target image
         target_index = None
         for i, path in enumerate(self.image_paths):
             if str(path) == target_image_path:
@@ -252,14 +228,12 @@ class EnhancedSearchEngine:
         if target_index is None:
             return []
         
-        # Use the image's embedding as query
         query_vector = self.image_embeddings[target_index]
         
         exclude_indices = [target_index] if exclude_self else None
         return self.search_similar(query_vector, top_k, exclude_indices)
     
     def get_image_metadata(self, image_path):
-        """Get metadata for an image"""
         try:
             path_obj = Path(image_path)
             if path_obj.exists():
@@ -280,5 +254,4 @@ class EnhancedSearchEngine:
             "exists": False
         }
 
-# Create global instance
 enhanced_search_engine = EnhancedSearchEngine()

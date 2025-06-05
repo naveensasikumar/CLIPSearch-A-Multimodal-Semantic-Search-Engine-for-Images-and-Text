@@ -4,7 +4,6 @@ import time
 import uuid
 from pathlib import Path
 
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import streamlit as st
@@ -12,8 +11,6 @@ from streamlit.components.v1 import html
 import streamlit.components.v1 as components
 import torch
 
-
-# Now import the rest
 from backend.preprocessing import process_query
 from backend.model import get_text_embedding, get_image_embedding, load_clip
 from backend.search import search_clip
@@ -23,32 +20,23 @@ from PIL import Image
 import numpy as np
 import base64
 import json
-
         
 def get_absolute_image_path(relative_path):
-    """Convert relative path to absolute path for your specific structure"""
-    # Since you're in frontend/, the project root is one level up
     project_root = os.path.dirname(os.path.dirname(__file__))
     
-    # Your specific directory structure paths to try
     possible_bases = [
-        # From project root
         project_root,
-        # Your data and downloaded_images folders
         os.path.join(project_root, "downloaded_images"),
         os.path.join(project_root, "data"),
         os.path.join(project_root, "data", "downloaded_images"),
-        # Alternative paths
         os.path.join(project_root, "images"),
     ]
     
-    # Try different path variations
     path_variations = [
-        str(relative_path),  # Original path
-        os.path.basename(str(relative_path)),  # Just filename
+        str(relative_path),
+        os.path.basename(str(relative_path)),
     ]
     
-    # Try each combination
     for base in possible_bases:
         for path_var in path_variations:
             try:
@@ -58,10 +46,8 @@ def get_absolute_image_path(relative_path):
             except:
                 continue
     
-    # If nothing found, return original
     return str(relative_path)
 
-# Page config with custom favicon and theme
 st.set_page_config(
     layout="wide", 
     page_title="CLIPSearch AI", 
@@ -69,19 +55,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load CLIP model
 try:
     clip_model, clip_processor = load_clip()
 except:
     print("🔄 Trying alternative loading method...")
     clip_model, clip_processor = load_clip_simple()
 
-# Custom CSS for impressive UI
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
     * {
         font-family: 'Inter', sans-serif;
     }
@@ -101,7 +84,6 @@ st.markdown("""
         margin: 20px;
     }
     
-    /* Header Styles */
     .hero-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 40px 30px;
@@ -173,7 +155,6 @@ st.markdown("""
         opacity: 0.8;
     }
     
-    /* Input Styles */
     .search-container {
         background: white;
         padding: 30px;
@@ -213,7 +194,6 @@ st.markdown("""
         background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
     }
     
-    /* Button Styles */
     .stButton > button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -230,7 +210,6 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     }
     
-    /* Sidebar Styles */
     .css-1d391kg {
         background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
     }
@@ -239,7 +218,6 @@ st.markdown("""
         color: white;
     }
     
-    /* Results Section */
     .results-header {
         background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
         color: white;
@@ -261,7 +239,6 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(237, 137, 54, 0.3);
     }
     
-    /* Image Gallery Styles */
     .stImage > div {
         border-radius: 15px;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
@@ -277,7 +254,6 @@ st.markdown("""
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
     
-    /* Loading Animation */
     .loading-container {
         display: flex;
         justify-content: center;
@@ -299,7 +275,6 @@ st.markdown("""
         100% { transform: rotate(360deg); }
     }
     
-    /* Metrics Cards */
     .metric-card {
         background: white;
         padding: 20px;
@@ -315,7 +290,6 @@ st.markdown("""
         box-shadow: 0 12px 35px rgba(0,0,0,0.15);
     }
     
-    /* Responsive Design */
     @media (max-width: 768px) {
         .hero-title {
             font-size: 2.5rem;
@@ -331,7 +305,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Session state initialization
 if "recent_input_type" not in st.session_state:
     st.session_state.recent_input_type = None
 if "query_vector" not in st.session_state:
@@ -345,7 +318,6 @@ if "search_history" not in st.session_state:
 if "upload_counter" not in st.session_state:
     st.session_state.upload_counter = 0
 
-# New session state for enhanced features
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 if "favorites" not in st.session_state:
@@ -357,7 +329,6 @@ if "search_results" not in st.session_state:
 if "query_info" not in st.session_state:
     st.session_state.query_info = ""
 
-# Modern Hero Header
 st.markdown("""
 <div class="hero-header">
     <h1 class="hero-title">🔍 CLIPSearch AI</h1>
@@ -379,7 +350,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Enhanced sidebar with new features
 with st.sidebar:
     st.markdown("""
     <div style='text-align: center; padding: 20px; color: white;'>
@@ -388,7 +358,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation tabs
     tab_selected = st.radio(
         "Navigation",
         ["🔍 Search", "📊 Analytics", "⭐ Favorites", "📁 Collections"],
@@ -396,7 +365,6 @@ with st.sidebar:
     )
     
     if tab_selected == "🔍 Search":
-        # Your existing search parameters
         st.markdown("### 🎯 Search Parameters")
         search_mode = st.selectbox(
             "Search Mode",
@@ -421,7 +389,6 @@ with st.sidebar:
             help="Maximum number of results to display"
         )
         
-        # Collection selector for search
         collections = enhanced_search_engine.get_collections()
         if collections:
             st.markdown("### 📁 Search in Collection")
@@ -438,17 +405,14 @@ with st.sidebar:
             st.session_state.current_collection = None if collection_ids[selected_idx] == "all" else collection_ids[selected_idx]
     
     elif tab_selected == "⭐ Favorites":
-        # Favorites management
         st.markdown("### ⭐ Your Favorites")
         favorites = enhanced_search_engine.get_favorites()
         
         if favorites:
             st.write(f"You have {len(favorites)} favorite images")
             
-            # Show recent favorites
-            for fav in favorites[-5:]:  # Show last 5
+            for fav in favorites[-5:]:
                 if st.button(f"🖼️ {Path(fav['path']).name}", key=f"fav_{fav['path']}"):
-                    # Find similar images to this favorite
                     similar_results = enhanced_search_engine.find_similar_to_image(fav['path'])
                     st.session_state.search_results = similar_results
                     st.session_state.query_info = f"Similar to {Path(fav['path']).name}"
@@ -458,10 +422,8 @@ with st.sidebar:
             st.info("No favorites yet. Add some by clicking the ⭐ button on search results!")
     
     elif tab_selected == "📁 Collections":
-        # Collection management
         st.markdown("### 📁 Manage Collections")
         
-        # Create new collection
         with st.expander("➕ Create New Collection"):
             new_collection_name = st.text_input("Collection Name")
             new_collection_desc = st.text_area("Description (optional)")
@@ -473,7 +435,6 @@ with st.sidebar:
                 st.success(f"Created collection: {new_collection_name}")
                 st.rerun()
         
-        # Show existing collections
         collections = enhanced_search_engine.get_collections()
         if collections:
             for coll_id, coll_data in collections.items():
@@ -482,11 +443,9 @@ with st.sidebar:
                     st.write(f"**Created:** {coll_data['created_date'][:10]}")
                     
                     if st.button(f"Browse {coll_data['name']}", key=f"browse_{coll_id}"):
-                        # Show collection images in main area
                         st.session_state.view_collection = coll_id
                         st.rerun()
     
-    # Search history (for all tabs)
     st.markdown("---")
     if st.session_state.search_history:
         st.markdown("### 📜 Recent Searches")
@@ -504,10 +463,9 @@ with st.sidebar:
         st.session_state.text_input = ""
         st.session_state.search_history = []
         st.session_state.search_results = []
-        st.session_state.upload_counter += 1  # Force image upload reset
+        st.session_state.upload_counter += 1
         st.rerun()
 
-# Enhanced result display function
 def display_enhanced_gallery(results, query_info=None):
     if not results:
         st.markdown("""
@@ -518,7 +476,6 @@ def display_enhanced_gallery(results, query_info=None):
         """, unsafe_allow_html=True)
         return
     
-    # Search results header with query info
     if query_info:
         st.markdown(f"""
         <div class="query-display">
@@ -526,7 +483,6 @@ def display_enhanced_gallery(results, query_info=None):
         </div>
         """, unsafe_allow_html=True)
     
-    # Professional grid layout with enhanced features
     cols_per_row = 3
     for i in range(0, len(results), cols_per_row):
         cols = st.columns(cols_per_row)
@@ -537,21 +493,16 @@ def display_enhanced_gallery(results, query_info=None):
             score = result["score"]
             img_index = result.get("index", 0)
             
-            # Convert score to percentage
             match_percentage = max(0, min(100, score * 100))
             
-            # FIX: Resolve the image path correctly for your structure
             resolved_path = get_absolute_image_path(img_path)
             
-            if os.path.exists(resolved_path):  # Use resolved_path instead of Path(img_path).exists()
+            if os.path.exists(resolved_path):
                 with col:
-                    # Display image with resolved path
                     st.image(resolved_path, use_container_width=True)
                     
-                    # Get image metadata using resolved path
                     metadata = enhanced_search_engine.get_image_metadata(resolved_path)
                     
-                    # Enhanced caption with metadata
                     st.markdown(f"""
                     <div style='text-align: center; padding: 10px; background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%); 
                                 border-radius: 12px; margin: 10px 0; border: 1px solid #e2e8f0;'>
@@ -568,11 +519,9 @@ def display_enhanced_gallery(results, query_info=None):
                     </div>
                     """, unsafe_allow_html=True)
                     
-                    # Action buttons
                     button_cols = st.columns(4)
                     
                     with button_cols[0]:
-                        # Favorite button - use resolved_path
                         is_favorited = resolved_path in [fav['path'] for fav in enhanced_search_engine.get_favorites()]
                         fav_icon = "💛" if is_favorited else "⭐"
                         if st.button(fav_icon, key=f"fav_{img_index}_{i}", help="Add to favorites"):
@@ -587,7 +536,6 @@ def display_enhanced_gallery(results, query_info=None):
                             st.rerun()
                     
                     with button_cols[1]:
-                        # Find similar button - use resolved_path
                         if st.button("🔄", key=f"similar_{img_index}_{i}", help="Find similar"):
                             similar_results = enhanced_search_engine.find_similar_to_image(resolved_path)
                             st.session_state.search_results = similar_results
@@ -596,18 +544,15 @@ def display_enhanced_gallery(results, query_info=None):
                             st.rerun()
                     
                     with button_cols[2]:
-                        # Add to collection button
                         collections = enhanced_search_engine.get_collections()
                         if collections and st.button("📁", key=f"collect_{img_index}_{i}", help="Add to collection"):
                             st.session_state[f"show_collections_{img_index}_{i}"] = True
                     
                     with button_cols[3]:
-                        # Expand button - use resolved_path
                         if st.button("🔍", key=f"expand_{img_index}_{i}", help="View details"):
                             with st.expander("🖼️ Full Size Preview", expanded=True):
                                 st.image(resolved_path, caption=f"📁 {metadata['filename']}")
                                 
-                                # Detailed metadata
                                 col_a, col_b, col_c = st.columns(3)
                                 with col_a:
                                     st.metric("File Size", f"{metadata['size_mb']} MB")
@@ -616,7 +561,6 @@ def display_enhanced_gallery(results, query_info=None):
                                 with col_c:
                                     st.metric("Raw Score", f"{score:.4f}")
                     
-                    # Collection selector (shown when collection button is clicked)
                     if st.session_state.get(f"show_collections_{img_index}_{i}", False):
                         collections = enhanced_search_engine.get_collections()
                         if collections:
@@ -648,28 +592,19 @@ def display_enhanced_gallery(results, query_info=None):
                                     st.session_state[f"show_collections_{img_index}_{i}"] = False
                                     st.rerun()
             else:
-                # Show debug info for missing images
                 with col:
                     st.error("❌ Image not found")
                     st.write(f"**Original:** `{img_path}`")
                     st.write(f"**Tried:** `{resolved_path}`")
-                    
-                    # Debug: show what we're looking for
                     st.write(f"**Looking for:** `{os.path.basename(img_path)}`")
 
-# ALSO UPDATE your process_search_with_analytics function to fix paths in results:
-# Find this function (around line 600) and replace it with this:
-
 def process_search_with_analytics(query_type, query_data, max_results):
-    """Process search and log analytics"""
     start_time = time.time()
     
     try:
         if query_type == "text":
-            # Your existing text processing
             text_vector, cleaned_query = process_query(query_data)
             
-            # Search
             if st.session_state.current_collection:
                 results = enhanced_search_engine.search_in_collection(
                     text_vector, st.session_state.current_collection, top_k=max_results
@@ -677,7 +612,6 @@ def process_search_with_analytics(query_type, query_data, max_results):
             else:
                 results = enhanced_search_engine.search_similar(text_vector, top_k=max_results)
             
-            # FIX: Resolve paths in results
             fixed_results = []
             for result in results:
                 resolved_path = get_absolute_image_path(result["path"])
@@ -685,20 +619,17 @@ def process_search_with_analytics(query_type, query_data, max_results):
                     "path": resolved_path,
                     "score": result["score"],
                     "index": result.get("index", 0),
-                    "original_path": result["path"]  # Keep original for debugging
+                    "original_path": result["path"]
                 })
             
-            # Log analytics
             response_time = (time.time() - start_time) * 1000
             analytics.log_search("text", query_data, cleaned_query, len(fixed_results), response_time)
             
             return fixed_results, cleaned_query
             
         elif query_type == "image":
-            # Your existing image processing
             image_vector = get_image_embedding(query_data, clip_model, clip_processor)
             
-            # Search
             if st.session_state.current_collection:
                 results = enhanced_search_engine.search_in_collection(
                     image_vector, st.session_state.current_collection, top_k=max_results
@@ -706,7 +637,6 @@ def process_search_with_analytics(query_type, query_data, max_results):
             else:
                 results = enhanced_search_engine.search_similar(image_vector, top_k=max_results)
             
-            # FIX: Resolve paths in results
             fixed_results = []
             for result in results:
                 resolved_path = get_absolute_image_path(result["path"])
@@ -714,10 +644,9 @@ def process_search_with_analytics(query_type, query_data, max_results):
                     "path": resolved_path,
                     "score": result["score"],
                     "index": result.get("index", 0),
-                    "original_path": result["path"]  # Keep original for debugging
+                    "original_path": result["path"]
                 })
             
-            # Log analytics
             response_time = (time.time() - start_time) * 1000
             analytics.log_search("image", "uploaded_image", "uploaded_image", len(fixed_results), response_time)
             
@@ -727,13 +656,10 @@ def process_search_with_analytics(query_type, query_data, max_results):
         st.exception(e)
         return [], ""
 
-# Main content based on selected tab
 if tab_selected == "🔍 Search":
-    # Modern Search Interface
     with st.container():
         st.markdown('<div class="search-container">', unsafe_allow_html=True)
         
-        # Handle text input reset
         text_input_value = ""
         if st.session_state.get('reset_text', False):
             st.session_state.reset_text = False
@@ -741,7 +667,6 @@ if tab_selected == "🔍 Search":
         else:
             text_input_value = st.session_state.text_input
         
-        # Text Search
         col1, col2 = st.columns([4, 1])
         with col1:
             text_query = st.text_input(
@@ -751,7 +676,6 @@ if tab_selected == "🔍 Search":
                 placeholder="e.g., 'a red sports car' or 'sunset over mountains'",
                 help="Describe what you're looking for in natural language"
             )
-            # Update session state with current input
             st.session_state.text_input = text_query
         
         with col2:
@@ -760,7 +684,6 @@ if tab_selected == "🔍 Search":
         
         st.markdown("### 📸 Or Upload an Image")
         
-        # Handle image upload with reset capability
         upload_key = f"image_input_{st.session_state.upload_counter}"
         uploaded_image = st.file_uploader(
             "Choose an image file",
@@ -771,7 +694,6 @@ if tab_selected == "🔍 Search":
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Text search processing
     if text_query and (st.session_state.recent_input_type != "image" or uploaded_image is None):
         if text_query not in st.session_state.search_history:
             st.session_state.search_history.append(text_query)
@@ -782,7 +704,6 @@ if tab_selected == "🔍 Search":
             st.session_state.query_info = processed_query
             st.session_state.recent_input_type = "text"
     
-    # Image search processing
     if uploaded_image is not None:
         image = Image.open(uploaded_image)
         
@@ -796,15 +717,12 @@ if tab_selected == "🔍 Search":
             st.session_state.query_info = processed_query
             st.session_state.recent_input_type = "image"
     
-    # Display results
     if st.session_state.search_results:
         query_info = st.session_state.query_info
         display_enhanced_gallery(st.session_state.search_results, query_info)
         
-        # Results summary with rating
         st.success(f"✅ Found {len(st.session_state.search_results)} results")
         
-        # User feedback
         st.markdown("### 📝 Rate this search")
         rating = st.radio(
             "How satisfied are you with these results?",
@@ -819,20 +737,17 @@ if tab_selected == "🔍 Search":
             st.rerun()
 
 elif tab_selected == "📊 Analytics":
-    # Show analytics dashboard
     analytics.render_analytics_dashboard()
 
 elif tab_selected == "⭐ Favorites":
-    # Display favorites
     st.markdown("## ⭐ Your Favorite Images")
     favorites = enhanced_search_engine.get_favorites()
     
     if favorites:
-        # Create results format for favorites
         fav_results = [
             {
                 "path": fav["path"],
-                "score": 1.0,  # Favorites have perfect score
+                "score": 1.0,
                 "index": i
             }
             for i, fav in enumerate(favorites)
@@ -840,7 +755,6 @@ elif tab_selected == "⭐ Favorites":
         
         display_enhanced_gallery(fav_results, f"Your {len(favorites)} favorite images")
         
-        # Bulk actions for favorites
         st.markdown("### 🛠️ Bulk Actions")
         col1, col2 = st.columns(2)
         
@@ -858,7 +772,6 @@ elif tab_selected == "⭐ Favorites":
         with col2:
             if st.button("🗑️ Clear All Favorites"):
                 if st.button("Confirm Clear All", type="secondary"):
-                    # Clear favorites file
                     with open(enhanced_search_engine.favorites_file, 'w') as f:
                         json.dump({}, f)
                     st.success("All favorites cleared!")
@@ -866,7 +779,6 @@ elif tab_selected == "⭐ Favorites":
     else:
         st.info("No favorites yet. Add some by clicking the ⭐ button on search results!")
         
-        # Show some sample searches to get started
         st.markdown("### 🚀 Try these sample searches:")
         sample_queries = ["beautiful landscape", "modern architecture", "cute animals", "vintage cars"]
         
@@ -875,15 +787,12 @@ elif tab_selected == "⭐ Favorites":
             with cols[i]:
                 if st.button(f"🔍 {query}", key=f"sample_{i}"):
                     st.session_state.text_input = query
-                    # Switch to search tab and trigger search
                     st.session_state.tab_selected = "🔍 Search"
                     st.rerun()
 
 elif tab_selected == "📁 Collections":
-    # Display collections
     st.markdown("## 📁 Your Collections")
     
-    # Check if viewing a specific collection
     if hasattr(st.session_state, 'view_collection'):
         collection_id = st.session_state.view_collection
         collections = enhanced_search_engine.get_collections()
@@ -900,7 +809,6 @@ elif tab_selected == "📁 Collections":
                     st.rerun()
             
             with col2:
-                # Search within this collection
                 if st.text_input("🔍 Search within this collection", key="collection_search"):
                     collection_query = st.session_state.collection_search
                     if collection_query:
@@ -914,7 +822,6 @@ elif tab_selected == "📁 Collections":
                             else:
                                 st.info("No matches found in this collection.")
             
-            # Show collection images
             collection_images = enhanced_search_engine.get_collection_images(collection_id)
             if collection_images:
                 coll_results = []
@@ -934,15 +841,12 @@ elif tab_selected == "📁 Collections":
                 st.info("This collection is empty. Add images by using the 📁 button on search results.")
     
     else:
-        # Show all collections overview
         collections = enhanced_search_engine.get_collections()
         
         if collections:
-            # Collections statistics
             total_images = sum(len(coll_data['images']) for coll_data in collections.values())
             st.markdown(f"**Total Collections:** {len(collections)} | **Total Images:** {total_images}")
             
-            # Display collections in a grid
             col_per_row = 2
             collection_items = list(collections.items())
             
@@ -960,7 +864,6 @@ elif tab_selected == "📁 Collections":
                             if coll_data.get('description'):
                                 st.write(f"**Description:** {coll_data['description'][:100]}...")
                             
-                            # Show preview of first few images
                             if coll_data['images']:
                                 preview_images = [img for img in coll_data['images'][:3] if Path(img).exists()]
                                 if preview_images:
@@ -969,7 +872,6 @@ elif tab_selected == "📁 Collections":
                                         with preview_cols[j]:
                                             st.image(img_path, use_container_width=True)
                             
-                            # Action buttons
                             button_cols = st.columns(2)
                             with button_cols[0]:
                                 if st.button(f"Browse", key=f"browse_{coll_id}"):
@@ -979,7 +881,6 @@ elif tab_selected == "📁 Collections":
                             with button_cols[1]:
                                 if st.button(f"Delete", key=f"delete_{coll_id}", type="secondary"):
                                     if st.button(f"Confirm Delete {coll_data['name']}", key=f"confirm_delete_{coll_id}"):
-                                        # Delete collection
                                         try:
                                             with open(enhanced_search_engine.collections_file, 'r') as f:
                                                 all_collections = json.load(f)
@@ -997,7 +898,6 @@ elif tab_selected == "📁 Collections":
         else:
             st.info("No collections yet. Create your first collection in the sidebar!")
             
-            # Getting started guide
             st.markdown("""
             ### 🚀 Getting Started with Collections
             
@@ -1009,7 +909,6 @@ elif tab_selected == "📁 Collections":
             Collections help you organize your favorite images by theme, project, or any criteria you choose!
             """)
 
-# Show welcome message when no search is active and on search tab
 if tab_selected == "🔍 Search" and not st.session_state.search_results:
     st.markdown("""
     <div style='text-align: center; padding: 60px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
@@ -1024,7 +923,6 @@ if tab_selected == "🔍 Search" and not st.session_state.search_results:
     </div>
     """, unsafe_allow_html=True)
 
-# Enhanced action buttons for current results
 if st.session_state.search_results and tab_selected == "🔍 Search":
     st.markdown("---")
     st.markdown("### 🛠️ Bulk Actions")
@@ -1038,7 +936,6 @@ if st.session_state.search_results and tab_selected == "🔍 Search":
     
     with action_cols[1]:
         if st.button("📥 Export Results", use_container_width=True):
-            # Create downloadable results list
             results_data = []
             for result in st.session_state.search_results:
                 results_data.append(f"{result['path']} (Score: {result['score']:.4f})")
@@ -1065,13 +962,11 @@ if st.session_state.search_results and tab_selected == "🔍 Search":
     
     with action_cols[3]:
         if st.button("🔄 Refine Search", use_container_width=True):
-            # Save current search to history
             if st.session_state.recent_input_type == "text":
                 current_query = st.session_state.get("text_input", "")
                 if current_query and current_query not in st.session_state.search_history:
                     st.session_state.search_history.append(current_query)
 
-            # Clear search state
             st.session_state.search_results = []
             st.session_state.query_info = ""
             st.session_state.recent_input_type = None
@@ -1080,7 +975,6 @@ if st.session_state.search_results and tab_selected == "🔍 Search":
             
             st.rerun()
 
-# Footer
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
