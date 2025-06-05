@@ -69,11 +69,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-try:
-    clip_model, clip_processor = load_clip()
-except:
-    print("🔄 Trying alternative loading method...")
-    clip_model, clip_processor = load_clip_simple()
+clip_model, clip_processor = load_clip()
 
 st.markdown("""
 <style>
