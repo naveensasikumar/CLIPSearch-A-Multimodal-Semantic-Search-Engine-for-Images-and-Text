@@ -1,6 +1,7 @@
 from transformers import CLIPProcessor, CLIPModel
 import torch
 
+@st.cache_resource
 def load_clip():
     try:
         print("Loading CLIP model...")
