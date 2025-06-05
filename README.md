@@ -126,6 +126,13 @@ spellfix_t5_small/s
 [![Watch the demo](screenshots/demo-thumbnail.png)](https://drive.google.com/file/d/12h5_ccwOK68EXA9ppikOgrcon_PPXtFo/view?usp=share_link)
 
 ---
+## 🌐 Live Demo
+
+Explore the project live here:  
+🔗 [CLIPSearch: A Multimodal Semantic Search Engine](https://clipsearch-a-multimodal-semantic-search-engine-for-images-and.streamlit.app/)
+
+> ⚠️ **Note:** The demo is hosted on Streamlit Community Cloud (free tier), which does **not support GPU acceleration**. As a result, performance may be slower than expected, especially during model inference. For optimal speed, consider deploying in a GPU-enabled environment or using a Pro cloud solution.
+---
 
 ## 🚀 Future Improvements
 
