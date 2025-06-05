@@ -48,6 +48,20 @@ def get_absolute_image_path(relative_path):
     
     return str(relative_path)
 
+
+import os
+import gdown
+
+model_path = "spellfix_t5_small/model.safetensors"
+if not os.path.exists(model_path):
+    os.makedirs("spellfix_t5_small", exist_ok=True)
+    gdown.download(
+        "https://drive.google.com/uc?id=1408dJqMTyd2fPiGVB5qBnklFjwwsGzKg",  
+        model_path,
+        quiet=False
+    )
+
+
 st.set_page_config(
     layout="wide", 
     page_title="CLIPSearch AI", 

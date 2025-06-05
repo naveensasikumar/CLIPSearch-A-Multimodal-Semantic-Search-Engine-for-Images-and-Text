@@ -1,0 +1,11 @@
+streamlit
+torch>=1.13.0
+sentence-transformers
+transformers
+faiss-cpu
+numpy
+pandas
+Pillow
+gdown
+requests
+scikit-learn
