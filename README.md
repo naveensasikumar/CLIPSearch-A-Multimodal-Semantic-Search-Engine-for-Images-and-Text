@@ -1,0 +1,1 @@
+# CLIPSearch-A-Multimodal-Semantic-Search-Engine-for-Images-and-Text
