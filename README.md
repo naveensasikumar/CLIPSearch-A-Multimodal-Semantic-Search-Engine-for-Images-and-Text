@@ -65,7 +65,7 @@ To build a fast, flexible, and visually appealing semantic search engine that re
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/CLIPSearch.git
+git clone https://github.com/naveensasikumar/CLIPSearch-A-Multimodal-Semantic-Search-Engine-for-Images-and-Text.git
 cd CLIPSearch
 ```
 
